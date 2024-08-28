@@ -2,17 +2,17 @@
 # ---------------------------------------------------------------------------- #
 #                         Stage 1: Download the models                         #
 # ---------------------------------------------------------------------------- #
-FROM alpine/git:2.43.0 as download
+FROM alpine/git:2.43.0 AS download
 
 # NOTE: CivitAI usually requires an API token, so you need to add it in the header
 #       of the wget command if you're using a model from CivitAI.
 RUN apk add --no-cache wget && \
-    wget -q -O /model.safetensors https://huggingface.co/XpucT/Deliberate/resolve/main/Deliberate_v6.safetensors
+    wget -O /model.safetensors https://civitai.com/api/download/models/361593
 
 # ---------------------------------------------------------------------------- #
 #                        Stage 2: Build the final image                        #
 # ---------------------------------------------------------------------------- #
-FROM python:3.10.14-slim as build_final_image
+FROM python:3.10.14-slim AS build_final_image
 
 ARG A1111_RELEASE=v1.9.3
 
@@ -52,6 +52,17 @@ ADD src .
 
 COPY builder/cache.py /stable-diffusion-webui/cache.py
 RUN cd /stable-diffusion-webui && python cache.py --use-cpu=all --ckpt /model.safetensors
+
+
+# Custom Code Modified by Rehan to Install ControlNet
+RUN cd stable-diffusion-webui/extensions && \
+    git clone https://github.com/Mikubill/sd-webui-controlnet.git && \
+    cd ..
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r ${ROOT}/extensions/sd-webui-controlnet/requirements.txt
+
+RUN wget -q -O ${ROOT}/extensions/sd-webui-controlnet/models/controlnet-depth-sdxl.safetensors https://huggingface.co/xinsir/controlnet-depth-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors
 
 # Set permissions and specify the command to run
 RUN chmod +x /start.sh
