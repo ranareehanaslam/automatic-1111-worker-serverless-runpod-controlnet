@@ -1,32 +1,89 @@
-<div align="center">
+# Serverless Automatic 1111 on RunPod
 
-<h1>Automatic1111 | Worker</h1>
+This repository contains a serverless setup for running Automatic 1111 on RunPod. The setup leverages Docker and NVIDIA GPU support for efficient inference using the Stable Diffusion model.
 
-[![CI | Test Worker](https://github.com/runpod-workers/worker-template/actions/workflows/CI-test_worker.yml/badge.svg)](https://github.com/runpod-workers/worker-template/actions/workflows/CI-test_worker.yml)
-&nbsp;
-[![Docker Image](https://github.com/runpod-workers/worker-template/actions/workflows/CD-docker_dev.yml/badge.svg)](https://github.com/runpod-workers/worker-template/actions/workflows/CD-docker_dev.yml)
+## Features
 
-This worker is a RunPod worker that uses the Stable Diffusion model for AI tasks. The worker is built upon the Stable Diffusion WebUI, which is a user interface for Stable Diffusion AI models.
-</div>
+- **Serverless Inference:** Efficiently handle inference requests using the serverless handler.
+- **API Integration:** Easily interact with the inference process via a dedicated API.
+- **NVIDIA GPU Support:** Full GPU acceleration with NVIDIA CUDA for faster processing.
 
-## Model
+## Prerequisites
 
-The worker uses the Stable Diffusion model, which has been optimized for RunPod. This model is stored as a SafeTensors file, which is a format that facilitates efficient loading and execution of AI models. You may download the model file from the following link: here.
+- **NVIDIA CUDA Toolkit:** Ensure that your environment has the NVIDIA CUDA Toolkit installed.
+- **Docker with NVIDIA Runtime:** Docker must be configured with the NVIDIA runtime for GPU support.
 
-## Building the Worker
+### Installation Steps
 
-The worker is built using a Dockerfile. The Dockerfile specifies the base image, environment variables, system package dependencies, Python dependencies, and the steps to install and setup the Stable Diffusion WebUI. It also downloads the model and sets up the API server using supervisor.
+1. **Update and Upgrade Your System:**
 
-The Python dependencies are specified in requirements.txt. The primary dependency is runpod==0.9.4.
+    ```bash
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
+    ```
 
-## Running the Worker
+2. **Install NVIDIA CUDA Toolkit:**
 
-The worker can be run using the start.sh script. This script starts the init system and runs the serverless handler script.
+    ```bash
+    sudo apt install -y nvidia-cuda-toolkit
+    ```
+
+3. **Verify CUDA Installation:**
+
+    Run the following Docker command to verify that CUDA is working correctly:
+
+    ```bash
+    sudo docker run --rm --gpus all nvidia/cuda:11.6.2-base-ubuntu20.04 nvidia-smi
+    ```
+
+4. **Configure Docker with NVIDIA Runtime:**
+
+    Edit the Docker daemon configuration:
+
+    ```bash
+    sudo nano /etc/docker/daemon.json
+    ```
+
+    Add the following configuration:
+
+    ```json
+    {
+        "runtimes": {
+            "nvidia": {
+                "path": "/usr/bin/nvidia-container-runtime",
+                "runtimeArgs": []
+            }
+        },
+        "default-runtime": "nvidia"
+    }
+    ```
+
+    Save and exit the file, then restart Docker.
+
+5. **Build the Docker Image:**
+
+    Use the following command to build your Docker image:
+
+    ```bash
+    DOCKER_BUILDKIT=0 docker build -t nvidia-test -f Dockerfile .
+    ```
 
 ## API
 
-The worker provides an API for inference. The API is set up using supervisor, and the configuration is specified in webui_api.conf. The API runs on port 3000.
+The worker provides an API for inference, set up using `supervisor`. The API is configured to run on port 3000, allowing external requests to perform inference.
 
 ## Serverless Handler
 
-The serverless handler (rp_handler.py) is a Python script that handles inference requests. It defines a function handler(event) that takes an inference request, runs the inference using the Stable Diffusion model, and returns the output.
+The serverless handler (`rp_handler.py`) is a Python script responsible for managing inference requests. It defines the `handler(event)` function, which processes incoming requests, runs the inference using the Stable Diffusion model, and returns the output.
+
+## Usage
+
+To start the serverless instance and begin handling inference requests, follow the instructions provided in the guide above.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues, fork the repository, and send pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
