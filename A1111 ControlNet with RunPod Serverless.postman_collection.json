@@ -1,0 +1,747 @@
+{
+	"info": {
+		"_postman_id": "23d1543e-4b91-47c5-b212-272b181720d5",
+		"name": "A1111 ControlNet with RunPod Serverless",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31415823"
+	},
+	"item": [
+		{
+			"name": "Settings",
+			"item": [
+				{
+					"name": "Get Status / Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+									"    <div style='font-weight:bold;'>{{status}}</div>",
+									"    <img src='data:image/png;base64, {{img}}'/>",
+									"    `;",
+									"",
+									"    pm.visualizer.set(template, { ",
+									"        img: pm.response.json()[\"output\"][\"images\"][0],",
+									"        status: pm.response.json()[\"status\"]",
+									"    });",
+									"} catch(e) {",
+									"    //console.log(\"Couldn't yet load template.\")",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/health",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"health"
+							]
+						},
+						"description": "This endpoint retrieves the health status of a specific resource identified by the `endpoint_id`. The response is a JSON object with information about the status of jobs and workers. Below is the JSON schema for the response:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"jobs\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"completed\": { \"type\": \"integer\" },\n        \"failed\": { \"type\": \"integer\" },\n        \"inProgress\": { \"type\": \"integer\" },\n        \"inQueue\": { \"type\": \"integer\" },\n        \"retried\": { \"type\": \"integer\" }\n      }\n    },\n    \"workers\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"idle\": { \"type\": \"integer\" },\n        \"initializing\": { \"type\": \"integer\" },\n        \"ready\": { \"type\": \"integer\" },\n        \"running\": { \"type\": \"integer\" },\n        \"throttled\": { \"type\": \"integer\" },\n        \"unhealthy\": { \"type\": \"integer\" }\n      }\n    }\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Options",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+									"    <div style='font-weight:bold;'>{{status}}</div>",
+									"    <img src='data:image/png;base64, {{img}}'/>",
+									"    `;",
+									"",
+									"    pm.visualizer.set(template, { ",
+									"        img: pm.response.json()[\"output\"][\"images\"][0],",
+									"        status: pm.response.json()[\"status\"]",
+									"    });",
+									"} catch(e) {",
+									"    //console.log(\"Couldn't yet load template.\")",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"input\": {\r\n        \"api_name\": \"getOptions\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/runsync",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"runsync"
+							]
+						},
+						"description": "The `POST` request to the specified endpoint is used to trigger a synchronization process. The request payload includes an `input` object with an `api_name` attribute.\n\n### Response\n\nThe response to this request is a JSON object with the following structure:\n\n- `delayTime`: (number) The delay time for the execution.\n    \n- `executionTime`: (number) The time taken for the execution.\n    \n- `id`: (string) The ID associated with the execution.\n    \n- `output`: (object) An object containing a large number of key-value pairs representing various configuration settings for the synchronization process.\n    \n- `status`: (string) The status of the response.\n    \n\nThe `output` object contains numerous configuration settings and options for the synchronization process, each represented as a key-value pair. The response provides detailed information about the configuration settings and options that are applied during the synchronization process.\n\n``` json\n{\n  \"delayTime\": 0,\n  \"executionTime\": 0,\n  \"id\": \"\",\n  \"output\": {\n    // Key-value pairs representing various configuration settings\n  },\n  \"status\": \"\"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get Info",
+			"item": [
+				{
+					"name": "Get Control Net Modules",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+									"    <div style='font-weight:bold;'>{{status}}</div>",
+									"    <img src='data:image/png;base64, {{img}}'/>",
+									"    `;",
+									"",
+									"    pm.visualizer.set(template, { ",
+									"        img: pm.response.json()[\"output\"][\"images\"][0],",
+									"        status: pm.response.json()[\"status\"]",
+									"    });",
+									"} catch(e) {",
+									"    //console.log(\"Couldn't yet load template.\")",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"input\": {\r\n        \"api_name\": \"getControlNetModules\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/runsync",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"runsync"
+							]
+						},
+						"description": "The `POST` request to the specified endpoint triggers a synchronization process for a particular module. The request body includes an `input` object with an `api_name` parameter.\n\nThe response to this request is a JSON object with a `delayTime`, `executionTime`, `id`, `output`, `module_list`, and `status` fields. The `output` field contains detailed information about various modules, each with a `model_free` boolean value and an array of `sliders` with their respective properties. The `module_list` field is an array of module names.\n\nHere is the JSON schema for the response:\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"delayTime\": {\"type\": \"number\"},\n        \"executionTime\": {\"type\": \"number\"},\n        \"id\": {\"type\": \"string\"},\n        \"output\": {\n            \"type\": \"object\",\n            \"properties\": {\n                \"module_detail\": {\n                    \"type\": \"object\",\n                    \"additionalProperties\": {\n                        \"type\": \"object\",\n                        \"properties\": {\n                            \"model_free\": {\"type\": \"boolean\"},\n                            \"sliders\": {\n                                \"type\": \"array\",\n                                \"items\": {\n                                    \"type\": \"object\",\n                                    \"properties\": {\n                                        \"max\": {\"type\": \"number\"},\n                                        \"min\": {\"type\": \"number\"},\n                                        \"name\": {\"type\": \"string\"},\n                                        \"step\": {\"type\": \"number\"},\n                                        \"value\": {\"type\": \"number\"}\n                                    }\n                                }\n                            }\n                        }\n                    }\n                },\n                \"module_list\": {\n                    \"type\": \"array\",\n                    \"items\": {\"type\": \"string\"}\n                }\n            }\n        },\n        \"status\": {\"type\": \"string\"}\n    }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get ControlNet Models",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+									"    <div style='font-weight:bold;'>{{status}}</div>",
+									"    <img src='data:image/png;base64, {{img}}'/>",
+									"    `;",
+									"",
+									"    pm.visualizer.set(template, { ",
+									"        img: pm.response.json()[\"output\"][\"images\"][0],",
+									"        status: pm.response.json()[\"status\"]",
+									"    });",
+									"} catch(e) {",
+									"    //console.log(\"Couldn't yet load template.\")",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"input\": {\r\n        \"api_name\": \"getControlNetModels\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/runsync",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"runsync"
+							]
+						},
+						"description": "The endpoint `{{endpoint_id}}/runsync` is a POST request that allows you to run a synchronization process. The request should include a payload with the raw request body type, where the `input` object contains the `api_name` parameter.\n\n### Request Body\n\n- input (object)\n    \n    - api_name (string): The name of the API.\n        \n\n### Response\n\nThe response will be in JSON format with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"delayTime\": {\n      \"type\": \"number\"\n    },\n    \"executionTime\": {\n      \"type\": \"number\"\n    },\n    \"id\": {\n      \"type\": \"string\"\n    },\n    \"output\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"model_list\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"status\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sync",
+			"item": [
+				{
+					"name": "Run (sync) ControlNet txt2img",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"api_name\": \"txt2img\",\n        \"prompt\": \"A futuristic cityscape at sunset\",\n        \"negative_prompt\": \"low quality, blurry\",\n        \"seed\": 12345,\n        \"cfg_scale\": 7.5,\n        \"sampler_index\": \"Euler\",\n        \"num_inference_steps\": 50,\n        \"width\": 512,\n        \"height\": 512,\n        \"batch_count\": 1,\n        \"batch_size\": 1,\n        \"resize\": false,\n        \"override_settings\": {\n            \"sd_model_checkpoint\": \"realvisXL_v4_Lightning_Baked_VAE.ckpt\"\n        },\n        \"controlnet\": {\n            \"model\": \"controlnet_depth_sdxl\",\n            \"image\": \"base64_encoded_image_data\",\n            \"preprocess\": {\n                \"enable\": true,\n                \"pixel_perfect\": true\n            },\n            \"control_weight\": 1.0,\n            \"starting_control_step\": 5,\n            \"editing_control_step\": 45,\n            \"control_mode\": \"continuous\"\n        }\n    }\n}\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/runsync",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"runsync"
+							]
+						},
+						"description": "### Endpoint Description\n\nThis endpoint allows you to initiate a synchronous run for a specific task.\n\n### Request Body\n\n- `input` (object)\n    \n    - `api_name` (string, optional): The name of the API.\n        \n    - `prompt` (string, optional): The prompt for the task.\n        \n    - `negative_prompt` (string, optional): The negative prompt for the task.\n        \n    - `seed` (number): The seed value for the task.\n        \n    - `cfg_scale` (number): The scale value for the task.\n        \n    - `sampler_index` (string, optional): The index of the sampler.\n        \n    - `num_inference_steps` (number): The number of inference steps.\n        \n    - `width` (number): The width of the task.\n        \n    - `height` (number): The height of the task.\n        \n    - `batch_count` (number): The count of batches.\n        \n    - `batch_size` (number): The size of each batch.\n        \n    - `resize` (boolean): Indicates whether resizing is enabled.\n        \n    - `override_settings` (object)\n        \n        - `sd_model_checkpoint` (string, optional): The model checkpoint for the task.\n            \n    - `controlnet` (object)\n        \n        - `model` (string, optional): The model for controlnet.\n            \n        - `image` (string, optional): The image for controlnet.\n            \n        - `preprocess` (object)\n            \n            - `enable` (boolean): Indicates whether preprocessing is enabled.\n                \n            - `pixel_perfect` (boolean): Indicates whether pixel-perfect preprocessing is enabled.\n                \n        - `control_weight` (number): The weight for controlnet.\n            \n        - `starting_control_step` (number): The starting control step.\n            \n        - `editing_control_step` (number): The editing control step.\n            \n        - `control_mode` (string, optional): The mode for controlnet.\n            \n\n### Response\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"delayTime\": { \"type\": \"number\" },\n    \"executionTime\": { \"type\": \"number\" },\n    \"id\": { \"type\": \"string\" },\n    \"output\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"images\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n        \"info\": { \"type\": \"string\" },\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"alwayson_scripts\": { \"type\": \"object\" },\n            \"batch_size\": { \"type\": \"number\" },\n            \"cfg_scale\": { \"type\": \"number\" },\n            \"comments\": { \"type\": \"null\" },\n            \"denoising_strength\": { \"type\": \"null\" },\n            \"disable_extra_networks\": { \"type\": \"boolean\" },\n            \"do_not_save_grid\": { \"type\": \"boolean\" },\n            \"do_not_save_samples\": { \"type\": \"boolean\" },\n            \"enable_hr\": { \"type\": \"boolean\" },\n            \"eta\": { \"type\": \"null\" },\n            \"firstpass_image\": { \"type\": \"null\" },\n            \"firstphase_height\": { \"type\": \"number\" },\n            \"firstphase_width\": { \"type\": \"number\" },\n            \"force_task_id\": { \"type\": \"null\" },\n            \"height\": { \"type\": \"number\" },\n            \"hr_checkpoint_name\": { \"type\": \"null\" },\n            \"hr_negative_prompt\": { \"type\": \"string\" },\n            \"hr_prompt\": { \"type\": \"string\" },\n            \"hr_resize_x\": { \"type\": \"number\" },\n            \"hr_resize_y\": { \"type\": \"number\" },\n            \"hr_sampler_name\": { \"type\": \"null\" },\n            \"hr_scale\": { \"type\": \"number\" },\n            \"hr_scheduler\": { \"type\": \"null\" },\n            \"hr_second_pass_steps\": { \"type\": \"number\" },\n            \"hr_upscaler\": { \"type\": \"null\" },\n            \"infotext\": { \"type\": \"null\" },\n            \"n_iter\": { \"type\": \"number\" },\n            \"negative_prompt\": { \"type\": \"string\" },\n            \"override_settings\": { \"type\": \"object\" },\n            \"override_settings_restore_afterwards\": { \"type\": \"boolean\" },\n            \"prompt\": { \"type\": \"string\" },\n            \"refiner_checkpoint\": { \"type\": \"null\" },\n            \"refiner_switch_at\": { \"type\": \"null\" },\n            \"restore_faces\": { \"type\": \"null\" },\n            \"s_churn\": { \"type\": \"null\" },\n            \"s_min_uncond\": { \"type\": \"null\" },\n            \"s_noise\": { \"type\": \"null\" },\n            \"s_tmax\": { \"type\": \"null\" },\n            \"s_tmin\": { \"type\": \"null\" },\n            \"sampler_index\": { \"type\": \"string\" },\n            \"sampler_name\": { \"type\": \"null\" },\n            \"save_images\": { \"type\": \"boolean\" },\n            \"scheduler\": { \"type\": \"null\" },\n            \"script_args\": { \"type\": \"array\" },\n            \"script_name\": { \"type\": \"null\" },\n            \"seed\": { \"type\": \"number\" },\n            \"seed_resize_from_h\": { \"type\": \"number\" },\n            \"seed_resize_from_w\": { \"type\": \"number\" },\n            \"send_images\": { \"type\": \"boolean\" },\n            \"steps\": { \"type\": \"number\" },\n            \"styles\": { \"type\": \"null\" },\n            \"subseed\": { \"type\": \"number\" },\n            \"subseed_strength\": { \"type\": \"number\" },\n            \"tiling\": { \"type\": \"null\" },\n            \"width\": { \"type\": \"number\" }\n          }\n        },\n        \"status\": { \"type\": \"string\" }\n      }\n    }\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Run (sync) ControlNet img2img",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"api_name\": \"img2img\",\n        \"init_images\": [\"base64_encoded_image_data\"],\n        \"prompt\": \"A futuristic cityscape at sunset\",\n        \"negative_prompt\": \"low quality, blurry\",\n        \"seed\": 12345,\n        \"cfg_scale\": 7.5,\n        \"sampler_index\": \"Euler\",\n        \"num_inference_steps\": 50,\n        \"width\": 512,\n        \"height\": 512,\n        \"batch_count\": 1,\n        \"batch_size\": 1,\n        \"resize\": false,\n        \"override_settings\": {\n            \"sd_model_checkpoint\": \"realvisXL_v4_Lightning_Baked_VAE.ckpt\"\n        },\n        \"denoising_strength\": 0.75,\n        \"controlnet\": {\n            \"model\": \"controlnet_depth_sdxl\",\n            \"image\": \"base64_encoded_image_data\",\n            \"preprocess\": {\n                \"enable\": true,\n                \"pixel_perfect\": true\n            },\n            \"control_weight\": 1.0,\n            \"starting_control_step\": 5,\n            \"editing_control_step\": 45,\n            \"control_mode\": \"continuous\"\n        }\n    }\n}\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/runsync",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"runsync"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Run (sync) txt2img",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+									"    <div style='font-weight:bold;'>{{status}}</div>",
+									"    <img src='data:image/png;base64, {{img}}'/>",
+									"    `;",
+									"",
+									"    pm.visualizer.set(template, { ",
+									"        img: pm.response.json()[\"output\"][\"images\"][0],",
+									"        status: pm.response.json()[\"status\"]",
+									"    });",
+									"} catch(e) {",
+									"    //console.log(\"Couldn't yet load template.\")",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"api_name\": \"txt2img\",\n        \"prompt\": \"A serene mountain landscape at dawn\",\n        \"negative_prompt\": \"low quality, blurry\",\n        \"seed\": 12345,\n        \"cfg_scale\": 7.5,\n        \"sampler_index\": \"Euler\",\n        \"num_inference_steps\": 50,\n        \"width\": 512,\n        \"height\": 512,\n        \"batch_count\": 1,\n        \"batch_size\": 1,\n        \"resize\": false,\n        \"override_settings\": {\n            \"sd_model_checkpoint\": \"realvisXL_v4_Lightning_Baked_VAE.ckpt\"\n        }\n    }\n}\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/runsync",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"runsync"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Run (sync) img2img",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+									"    <div style='font-weight:bold;'>{{status}}</div>",
+									"    <img src='data:image/png;base64, {{img}}'/>",
+									"    `;",
+									"",
+									"    pm.visualizer.set(template, { ",
+									"        img: pm.response.json()[\"output\"][\"images\"][0],",
+									"        status: pm.response.json()[\"status\"]",
+									"    });",
+									"} catch(e) {",
+									"    //console.log(\"Couldn't yet load template.\")",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"api_name\": \"img2img\",\n        \"init_images\": [\"base64_encoded_image_data\"],\n        \"prompt\": \"A serene mountain landscape at dawn\",\n        \"negative_prompt\": \"low quality, blurry\",\n        \"seed\": 12345,\n        \"cfg_scale\": 7.5,\n        \"sampler_index\": \"Euler\",\n        \"num_inference_steps\": 50,\n        \"width\": 512,\n        \"height\": 512,\n        \"batch_count\": 1,\n        \"batch_size\": 1,\n        \"resize\": false,\n        \"override_settings\": {\n            \"sd_model_checkpoint\": \"realvisXL_v4_Lightning_Baked_VAE.ckpt\"\n        },\n        \"denoising_strength\": 0.75\n    }\n}\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/runsync",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"runsync"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ASync",
+			"item": [
+				{
+					"name": "Run (sync) ControlNet txt2img",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"api_name\": \"txt2img\",\n        \"prompt\": \"A futuristic cityscape at sunset\",\n        \"negative_prompt\": \"low quality, blurry\",\n        \"seed\": 12345,\n        \"cfg_scale\": 7.5,\n        \"sampler_index\": \"Euler\",\n        \"num_inference_steps\": 50,\n        \"width\": 512,\n        \"height\": 512,\n        \"batch_count\": 1,\n        \"batch_size\": 1,\n        \"resize\": false,\n        \"override_settings\": {\n            \"sd_model_checkpoint\": \"realvisXL_v4_Lightning_Baked_VAE.ckpt\"\n        },\n        \"controlnet\": {\n            \"model\": \"controlnet_depth_sdxl\",\n            \"image\": \"base64_encoded_image_data\",\n            \"preprocess\": {\n                \"enable\": true,\n                \"pixel_perfect\": true\n            },\n            \"control_weight\": 1.0,\n            \"starting_control_step\": 5,\n            \"editing_control_step\": 45,\n            \"control_mode\": \"continuous\"\n        }\n    }\n}\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/run",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"run"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Run (sync) ControlNet img2img",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"api_name\": \"img2img\",\n        \"init_images\": [\"base64_encoded_image_data\"],\n        \"prompt\": \"A futuristic cityscape at sunset\",\n        \"negative_prompt\": \"low quality, blurry\",\n        \"seed\": 12345,\n        \"cfg_scale\": 7.5,\n        \"sampler_index\": \"Euler\",\n        \"num_inference_steps\": 50,\n        \"width\": 512,\n        \"height\": 512,\n        \"batch_count\": 1,\n        \"batch_size\": 1,\n        \"resize\": false,\n        \"override_settings\": {\n            \"sd_model_checkpoint\": \"realvisXL_v4_Lightning_Baked_VAE.ckpt\"\n        },\n        \"denoising_strength\": 0.75,\n        \"controlnet\": {\n            \"model\": \"controlnet_depth_sdxl\",\n            \"image\": \"base64_encoded_image_data\",\n            \"preprocess\": {\n                \"enable\": true,\n                \"pixel_perfect\": true\n            },\n            \"control_weight\": 1.0,\n            \"starting_control_step\": 5,\n            \"editing_control_step\": 45,\n            \"control_mode\": \"continuous\"\n        }\n    }\n}\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/run",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"run"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Run (sync) txt2img",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+									"    <div style='font-weight:bold;'>{{status}}</div>",
+									"    <img src='data:image/png;base64, {{img}}'/>",
+									"    `;",
+									"",
+									"    pm.visualizer.set(template, { ",
+									"        img: pm.response.json()[\"output\"][\"images\"][0],",
+									"        status: pm.response.json()[\"status\"]",
+									"    });",
+									"} catch(e) {",
+									"    //console.log(\"Couldn't yet load template.\")",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"api_name\": \"txt2img\",\n        \"prompt\": \"A serene mountain landscape at dawn\",\n        \"negative_prompt\": \"low quality, blurry\",\n        \"seed\": 12345,\n        \"cfg_scale\": 7.5,\n        \"sampler_index\": \"Euler\",\n        \"num_inference_steps\": 50,\n        \"width\": 512,\n        \"height\": 512,\n        \"batch_count\": 1,\n        \"batch_size\": 1,\n        \"resize\": false,\n        \"override_settings\": {\n            \"sd_model_checkpoint\": \"realvisXL_v4_Lightning_Baked_VAE.ckpt\"\n        }\n    }\n}\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/run",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"run"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Run (sync) img2img",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    let template = `<a href=\"https://generativelabs.co/\">@GenerativeLabs</a>",
+									"    <div style='font-weight:bold;'>{{status}}</div>",
+									"    <img src='data:image/png;base64, {{img}}'/>",
+									"    `;",
+									"",
+									"    pm.visualizer.set(template, { ",
+									"        img: pm.response.json()[\"output\"][\"images\"][0],",
+									"        status: pm.response.json()[\"status\"]",
+									"    });",
+									"} catch(e) {",
+									"    //console.log(\"Couldn't yet load template.\")",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"api_name\": \"img2img\",\n        \"init_images\": [\"base64_encoded_image_data\"],\n        \"prompt\": \"A serene mountain landscape at dawn\",\n        \"negative_prompt\": \"low quality, blurry\",\n        \"seed\": 12345,\n        \"cfg_scale\": 7.5,\n        \"sampler_index\": \"Euler\",\n        \"num_inference_steps\": 50,\n        \"width\": 512,\n        \"height\": 512,\n        \"batch_count\": 1,\n        \"batch_size\": 1,\n        \"resize\": false,\n        \"override_settings\": {\n            \"sd_model_checkpoint\": \"realvisXL_v4_Lightning_Baked_VAE.ckpt\"\n        },\n        \"denoising_strength\": 0.75\n    }\n}\n"
+						},
+						"url": {
+							"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/run",
+							"protocol": "https",
+							"host": [
+								"api",
+								"runpod",
+								"ai"
+							],
+							"path": [
+								"v2",
+								"{{endpoint_id}}",
+								"run"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GetAsync Status",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_key}}"
+					},
+					{
+						"key": "Cookie",
+						"value": "__cflb=0H28v2ycMsGacX9vgDs2Wuwj4QgV2WqHXv8minJWhim"
+					}
+				],
+				"url": {
+					"raw": "https://api.runpod.ai/v2/{{endpoint_id}}/status/{{id}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"runpod",
+						"ai"
+					],
+					"path": [
+						"v2",
+						"{{endpoint_id}}",
+						"status",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "endpoint_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "api_key",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
